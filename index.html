@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#102a56">
+  <meta name="description" content="Tableau de bord de connexion satellite et forfaits Internet au Tchad.">
+  <title>Orbit Connect — Internet satellite au Tchad</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --ink: #edf3ff;
+      --muted: #9baac2;
+      --blue: #3978f6;
+      --blue-dark: #285fd0;
+      --red: #e84b60;
+      --line: #39415f;
+      --surface: #111f38;
+      --background: #081426;
+      --green: #168765;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
+    }
+
+    * { box-sizing: border-box; }
+    body { margin: 0; color: var(--ink); background: linear-gradient(110deg, #0a1d3c 0%, #102952 49%, #311d3a 51%, #421b2c 100%); background-attachment: fixed; }
+    button, input { font: inherit; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    a { color: inherit; text-decoration: none; }
+    button { cursor: pointer; }
+    .topbar { height: 68px; border-bottom: 3px solid var(--red); background: linear-gradient(105deg, #15366d 0%, #15366d 49%, #702b45 51%, #702b45 100%); color: #fff; }
+    .topbar-inner { width: min(1160px, calc(100% - 40px)); height: 100%; margin: auto; display: flex; align-items: center; justify-content: space-between; }
+    .brand { display: flex; align-items: center; gap: 13px; }
+    .brand-mark { width: 35px; height: 35px; display: grid; place-items: center; border: 1px solid #a64b60; border-radius: 11px; color: #ffdce1; background: linear-gradient(110deg, #1f4c91 0%, #1f4c91 49%, #8b354f 51%, #8b354f 100%); }
+    .brand-mark svg { width: 21px; height: 21px; }
+    .brand-name { font-size: 16px; font-weight: 750; letter-spacing: .09em; }
+    .brand-caption { padding-left: 13px; border-left: 1px solid #394456; color: #aeb8c8; font-size: 12px; }
+    .nav-links { display: flex; height: 100%; align-items: center; gap: 8px; }
+    .nav-link { display: inline-flex; gap: 8px; align-items: center; border-radius: 9px; padding: 10px 13px; color: #c3ccda; font-size: 14px; transition: background .18s, color .18s; }
+    .nav-link:hover, .nav-link.active { color: #fff; background: linear-gradient(105deg, #244b87 0%, #244b87 49%, #793249 51%, #793249 100%); }
+    .nav-link.active { color: #ff9aa6; }
+    .nav-link svg { width: 17px; height: 17px; }
+    main { min-height: calc(100vh - 68px); }
+    .container { width: min(1080px, calc(100% - 40px)); margin: 0 auto; }
+    .status-page { padding: 38px 0 74px; }
+    .action-banner { min-height: 64px; display: flex; align-items: center; justify-content: center; gap: 11px; border: 1px solid #ffffff24; border-radius: 15px; color: #fff; background: linear-gradient(105deg, #3478f6 0%, #3478f6 49%, #d83f59 51%, #d83f59 100%); box-shadow: 0 9px 26px #03091855; font-size: 15px; font-weight: 750; letter-spacing: .035em; }
+    .action-banner:hover { filter: brightness(1.12); }
+    .action-banner svg { width: 19px; height: 19px; }
+    .service-card { min-height: 184px; margin-top: 25px; padding: 34px 38px; position: relative; overflow: hidden; display: flex; align-items: center; border: 1px solid #ffffff20; border-radius: 22px; color: white; background: linear-gradient(108deg, #153b78 0%, #153b78 49%, #7c2c49 51%, #7c2c49 100%); box-shadow: 0 12px 32px #03091855; }
+    .service-card::after { content: ""; position: absolute; top: 50%; right: 5.5%; width: 78px; height: 78px; transform: translateY(-50%); border: 13px solid #a93854; border-radius: 50%; background: #3478d4; box-shadow: 0 0 0 10px #25345e; opacity: .8; }
+    .eyebrow { margin: 0 0 12px; color: #ff9aa6; font-size: 12px; font-weight: 750; letter-spacing: .13em; text-transform: uppercase; }
+    .service-card h1 { margin: 0; font-size: clamp(26px, 4vw, 34px); letter-spacing: -.045em; }
+    .service-card .intro { margin: 18px 0 0; color: #b4bece; font-size: 14px; }
+    .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 24px; }
+    .metric-card { min-height: 142px; padding: 23px 24px; border: 1px solid #ffffff20; border-radius: 18px; background: linear-gradient(110deg, #17315a 0%, #17315a 49%, #39243f 51%, #39243f 100%); box-shadow: 0 8px 24px #02081455; }
+    .metric-card:nth-child(even) { background: linear-gradient(110deg, #1a2c4b 0%, #1a2c4b 49%, #51253e 51%, #51253e 100%); }
+    .metric-label { display: flex; align-items: center; justify-content: space-between; gap: 10px; color: #b2bfd3; font-size: 12px; font-weight: 700; letter-spacing: .085em; text-transform: uppercase; }
+    .metric-label svg { width: 18px; height: 18px; color: var(--blue); }
+    .metric-card:nth-child(2) .metric-label svg { color: var(--red); }
+    .metric-card:nth-child(4) .metric-label svg { color: var(--red); }
+    .metric-value { margin: 17px 0 2px; font-size: 30px; font-weight: 780; letter-spacing: -.055em; }
+    .metric-unit { margin: 0; color: var(--muted); font-size: 13px; }
+    .usage-card { margin-top: 17px; padding: 22px 25px; border: 1px solid #ffffff20; border-radius: 18px; background: linear-gradient(110deg, #17315a 0%, #17315a 49%, #51253e 51%, #51253e 100%); box-shadow: 0 8px 24px #02081455; }
+    .usage-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .usage-title { display: flex; gap: 11px; align-items: center; margin: 0; font-size: 16px; }
+    .usage-title svg { width: 19px; height: 19px; color: var(--red); }
+    .usage-percent { color: #ff8794; font-weight: 750; font-size: 14px; }
+    .progress-track { height: 8px; margin-top: 17px; overflow: hidden; border-radius: 99px; background: #3a2b40; }
+    .progress-value { width: 20%; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #5a9af4, var(--red)); }
+    .usage-caption { display: flex; justify-content: space-between; margin-top: 9px; color: var(--muted); font-size: 12px; }
+    .plans-page { display: none; padding: 47px 0 72px; }
+    body[data-view="plans"] .status-page { display: none; }
+    body[data-view="plans"] .plans-page { display: block; }
+    .plans-heading { text-align: center; }
+    .plans-heading .eyebrow { margin-bottom: 10px; }
+    .plans-heading h1 { margin: 0; font-size: clamp(29px, 4vw, 38px); letter-spacing: -.05em; }
+    .plans-heading p { max-width: 620px; margin: 12px auto 0; color: var(--muted); line-height: 1.65; font-size: 15px; }
+    .plans-panel { margin-top: 33px; padding: 27px; border: 1px solid #ffffff22; border-radius: 20px; background: linear-gradient(110deg, #132b50 0%, #132b50 49%, #39233d 51%, #39233d 100%); box-shadow: 0 10px 30px #02081455; }
+    .plans-panel h2 { display: flex; align-items: center; gap: 10px; margin: 0 0 21px; font-size: 19px; letter-spacing: -.02em; }
+    .plans-panel h2 svg { color: var(--red); width: 20px; height: 20px; }
+    .plan-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .plan-card { display: flex; flex-direction: column; min-height: 226px; padding: 21px; border: 1px solid #ffffff24; border-radius: 15px; background: linear-gradient(110deg, #17335f 0%, #17335f 49%, #49243d 51%, #49243d 100%); box-shadow: 0 7px 18px #03091840; transition: border-color .18s, transform .18s, box-shadow .18s; }
+    .plan-card:nth-child(even) { background: linear-gradient(110deg, #1b2d4d 0%, #1b2d4d 49%, #59263e 51%, #59263e 100%); }
+    .plan-card:hover { transform: translateY(-2px); border-color: #ed9ba7; box-shadow: 0 8px 20px #df405419; }
+    .plan-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+    .plan-card h3 { margin: 2px 0 0; font-size: 17px; }
+    .plan-volume { padding: 5px 9px; border: 1px solid #874150; border-radius: 99px; color: #ffabb4; background: #40243a; font-size: 12px; font-weight: 750; white-space: nowrap; }
+    .plan-description { min-height: 42px; margin: 16px 0 13px; color: var(--muted); font-size: 13px; line-height: 1.55; }
+    .plan-price { margin: auto 0 17px; font-size: 18px; font-weight: 760; letter-spacing: -.025em; }
+    .plan-price small { color: var(--muted); font-size: 12px; font-weight: 500; letter-spacing: 0; }
+    .select-plan, .submit-payment { min-height: 42px; border: 1px solid #ffffff30; border-radius: 9px; color: white; background: linear-gradient(100deg, #326fe7 0%, #326fe7 49%, #cf3e59 51%, #cf3e59 100%); font-size: 12px; font-weight: 750; letter-spacing: .035em; transition: background .18s, filter .18s; }
+    .select-plan:hover, .submit-payment:hover { filter: brightness(1.15); }
+    .footer { padding: 34px 0 23px; border-top: 3px solid var(--red); color: #c0cad8; background: linear-gradient(105deg, #15366d 0%, #15366d 49%, #702b45 51%, #702b45 100%); }
+    .footer-grid { display: grid; grid-template-columns: 1.3fr 1fr 1.2fr; gap: 35px; }
+    .footer h2 { margin: 0 0 10px; color: white; font-size: 13px; letter-spacing: .09em; }
+    .footer p { margin: 0; color: #9daabd; font-size: 12px; line-height: 1.65; }
+    .copyright { margin-top: 25px !important; padding-top: 16px; border-top: 1px solid #263244; text-align: center; }
+    .mobile-nav { display: none; }
+    .modal-backdrop { position: fixed; inset: 0; z-index: 10; display: grid; place-items: center; padding: 18px; background: #07111fc2; }
+    .modal { width: min(100%, 460px); max-height: min(92vh, 700px); overflow-y: auto; padding: 24px; border: 1px solid #ffffff28; border-radius: 18px; background: linear-gradient(110deg, #142a4b 0%, #142a4b 49%, #3a203b 51%, #3a203b 100%); box-shadow: 0 25px 70px #0009; }
+    .modal-header { display: flex; align-items: flex-start; gap: 14px; }
+    .modal-close { width: 34px; height: 34px; flex: none; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 9px; color: #c0cce0; background: #1a2b47; }
+    .modal-close svg { width: 18px; height: 18px; }
+    .modal-header h2 { margin: 3px 0 5px; font-size: 20px; letter-spacing: -.035em; }
+    .modal-header p { margin: 0; color: var(--muted); font-size: 13px; }
+    .form-label { display: block; margin: 24px 0 10px; color: #d5e0f1; font-size: 13px; font-weight: 700; }
+    .methods { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; }
+    .method { min-height: 62px; display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid #ffffff24; border-radius: 11px; color: var(--ink); background: linear-gradient(105deg, #17325a 0%, #17325a 49%, #42243d 51%, #42243d 100%); text-align: left; font-size: 12px; font-weight: 650; }
+    .method.selected { border-color: var(--red); box-shadow: 0 0 0 2px #e84b6033; }
+    .method-logo { width: 28px; height: 28px; display: grid; flex: none; place-items: center; border-radius: 8px; color: white; background: #e83f54; font-size: 11px; font-weight: 800; }
+    .method:nth-child(2) .method-logo { background: #168765; }
+    .method-check { margin-left: auto; color: var(--blue); font-size: 15px; }
+    .phone-label { display: block; margin: 20px 0 8px; color: #d5e0f1; font-size: 13px; font-weight: 700; }
+    .phone-wrap { display: flex; align-items: center; min-height: 47px; overflow: hidden; border: 1px solid #ffffff24; border-radius: 10px; background: linear-gradient(105deg, #17325a 0%, #17325a 49%, #42243d 51%, #42243d 100%); }
+    .prefix { align-self: stretch; display: flex; align-items: center; gap: 8px; padding: 0 13px; border-right: 1px solid #ffffff24; color: #ffe0e4; background: linear-gradient(105deg, #91374e, #6d2e49); font-size: 13px; font-weight: 700; }
+    .prefix svg { width: 24px; height: 16px; border-radius: 2px; }
+    .phone-wrap input { width: 100%; min-width: 0; height: 45px; padding: 0 12px; border: 0; outline: none; color: var(--ink); background: transparent; }
+    .phone-wrap input::placeholder { color: #7789a5; }
+    .phone-wrap:focus-within { border-color: #6e95ed; box-shadow: 0 0 0 3px #3269e81a; }
+    .submit-payment { width: 100%; margin-top: 17px; text-transform: none; letter-spacing: 0; font-size: 14px; }
+    .demo-note { margin: 12px 0 0; color: #9baac2; text-align: center; font-size: 11px; line-height: 1.5; }
+    .notice { margin-top: 15px; padding: 12px; border: 1px solid #28745c; border-radius: 9px; color: #a8f0d3; background: #12372f; font-size: 13px; line-height: 1.5; }
+    .notice[hidden] { display: none; }
+    [hidden] { display: none !important; }
+    @media (max-width: 760px) {
+      .container { width: min(100% - 30px, 580px); }
+      .topbar { height: 62px; }
+      .topbar-inner { width: calc(100% - 28px); }
+      .brand { gap: 9px; }
+      .brand-mark { width: 32px; height: 32px; }
+      .brand-name { font-size: 14px; }
+      .brand-caption { padding-left: 9px; font-size: 11px; }
+      .nav-links { gap: 2px; }
+      .nav-link { padding: 9px; font-size: 13px; }
+      .nav-link svg { display: none; }
+      .status-page { padding: 25px 0 96px; }
+      .action-banner { min-height: 59px; border-radius: 13px; }
+      .service-card { min-height: 172px; padding: 28px 25px; border-radius: 19px; }
+      .service-card::after { right: 4%; width: 58px; height: 58px; border-width: 10px; box-shadow: 0 0 0 7px #25345e; }
+      .service-card .intro { max-width: 80%; font-size: 13px; line-height: 1.55; }
+      .metrics { grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 17px; }
+      .metric-card { min-height: 128px; padding: 19px; border-radius: 15px; }
+      .metric-value { margin-top: 15px; font-size: 28px; }
+      .usage-card { padding: 19px; border-radius: 15px; }
+      .plans-page { padding: 35px 0 94px; }
+      .plans-panel { padding: 19px; margin-top: 25px; }
+      .plan-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      .plan-card { min-height: 222px; padding: 16px; }
+      .plan-card h3 { font-size: 15px; }
+      .footer-grid { grid-template-columns: 1fr; gap: 22px; }
+      .footer { padding-bottom: 27px; }
+      .mobile-nav { position: fixed; z-index: 4; right: 0; bottom: 0; left: 0; display: grid; grid-template-columns: repeat(3, 1fr); min-height: 68px; padding: 7px 12px max(7px, env(safe-area-inset-bottom)); border-top: 1px solid #ffffff24; background: linear-gradient(105deg, #142a4b 0%, #142a4b 49%, #3a203b 51%, #3a203b 100%); backdrop-filter: blur(14px); }
+      .mobile-nav a { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: #a7b5cb; font-size: 11px; }
+      .mobile-nav a.active { color: #ff8794; }
+      .mobile-nav svg { width: 20px; height: 20px; }
+    }
+    @media (max-width: 420px) {
+      .brand-caption { font-size: 10px; }
+      .nav-link { padding: 8px; font-size: 12px; }
+      .plan-grid { grid-template-columns: 1fr; }
+      .plan-card { min-height: 205px; }
+      .service-card .intro { max-width: 85%; }
+      .modal { padding: 20px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="#status" aria-label="Orbit Connect, accueil">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 16.5a11 11 0 0 1 16 0M7.5 13a6 6 0 0 1 9 0M11 9.5a1.5 1.5 0 0 1 2 0M12 19v.01"/></svg>
+        </span>
+        <span class="brand-name">ORBIT CONNECT</span>
+        <span class="brand-caption">Internet au Tchad</span>
+      </a>
+      <nav class="nav-links" aria-label="Navigation principale">
+        <a class="nav-link active" data-nav="status" href="#status"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 16.5a11 11 0 0 1 16 0M7.5 13a6 6 0 0 1 9 0M11 9.5a1.5 1.5 0 0 1 2 0"/></svg>État du réseau</a>
+        <a class="nav-link" data-nav="plans" href="#plans"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 7.5h12l1 13H5l1-13ZM9 7.5V6a3 3 0 0 1 6 0v1.5"/></svg>Forfaits</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="status-page" id="status">
+      <div class="container">
+        <a class="action-banner" href="#plans">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 7.5h12l1 13H5l1-13ZM9 7.5V6a3 3 0 0 1 6 0v1.5"/></svg>
+          DÉCOUVRIR LES FORFAITS
+        </a>
+        <section class="service-card" aria-labelledby="service-title">
+          <div>
+            <p class="eyebrow">Votre connexion satellite</p>
+            <h1 id="service-title">Internet, sans limites.</h1>
+            <p class="intro">Consultez les performances du réseau et trouvez le forfait adapté à votre quotidien.</p>
+          </div>
+        </section>
+        <div class="metrics" aria-label="Performances du réseau">
+          <article class="metric-card">
+            <div class="metric-label"><span>Téléchargement</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v13m-5-5 5 5 5-5M5 21h14"/></svg></div>
+            <p class="metric-value">124.42</p><p class="metric-unit">Mbps</p>
+          </article>
+          <article class="metric-card">
+            <div class="metric-label"><span>Envoi</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21V8m-5 5 5-5 5 5M5 3h14"/></svg></div>
+            <p class="metric-value">33.08</p><p class="metric-unit">Mbps</p>
+          </article>
+          <article class="metric-card">
+            <div class="metric-label"><span>Latence</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg></div>
+            <p class="metric-value">22</p><p class="metric-unit">ms</p>
+          </article>
+          <article class="metric-card">
+            <div class="metric-label"><span>Variation</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 17 9 7l4 8 3-5 4 7"/></svg></div>
+            <p class="metric-value">4</p><p class="metric-unit">ms</p>
+          </article>
+        </div>
+        <section class="usage-card" aria-labelledby="usage-title">
+          <div class="usage-heading">
+            <h2 class="usage-title" id="usage-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 8.5A10 10 0 0 1 19 8.5M8 12a6 6 0 0 1 8 0m-5 3.5a2 2 0 0 1 2 0M12 20h.01"/></svg>Consommation de données</h2>
+            <span class="usage-percent">20 %</span>
+          </div>
+          <div class="progress-track" role="progressbar" aria-label="Consommation de données" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"><div class="progress-value"></div></div>
+          <div class="usage-caption"><span>Utilisé</span><span>80 % disponibles</span></div>
+        </section>
+      </div>
+    </section>
+
+    <section class="plans-page" id="plans">
+      <div class="container">
+        <header class="plans-heading">
+          <p class="eyebrow">Un accès pour chaque besoin</p>
+          <h1>Choisissez votre forfait</h1>
+          <p>Des offres simples pour rester connecté. Sélectionnez votre volume mensuel et choisissez votre moyen de paiement mobile.</p>
+        </header>
+        <div class="plans-panel">
+          <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 7.5h12l1 13H5l1-13ZM9 7.5V6a3 3 0 0 1 6 0v1.5"/></svg>Les forfaits disponibles</h2>
+          <div class="plan-grid" id="plan-grid"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <section><h2>ORBIT CONNECT</h2><p>Une connexion satellite fiable pour les particuliers et les entreprises au Tchad.</p></section>
+        <section id="assistance"><h2>ASSISTANCE</h2><p>Notre équipe est disponible pour vous aider à choisir une offre et configurer votre accès.</p></section>
+        <section><h2>PAIEMENT MOBILE</h2><p>Les choix Airtel Money et Moov Money sont présentés à titre de démonstration. Aucun paiement réel n'est effectué.</p></section>
+      </div>
+      <p class="copyright">© 2026 Orbit Connect. Démonstration indépendante, non affiliée à Starlink.</p>
+    </div>
+  </footer>
+
+  <nav class="mobile-nav" aria-label="Navigation mobile">
+    <a class="active" data-nav="status" href="#status"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 16.5a11 11 0 0 1 16 0M7.5 13a6 6 0 0 1 9 0M11 9.5a1.5 1.5 0 0 1 2 0"/></svg>Réseau</a>
+    <a data-nav="plans" href="#plans"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 7.5h12l1 13H5l1-13ZM9 7.5V6a3 3 0 0 1 6 0v1.5"/></svg>Forfaits</a>
+    <a href="#assistance"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.6 2.6 0 1 1 4.3 2c-1.1 1-1.8 1.4-1.8 3m0 3h.01"/></svg>Aide</a>
+  </nav>
+
+  <div class="modal-backdrop" id="checkout" hidden>
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="checkout-title">
+      <div class="modal-header">
+        <button class="modal-close" id="close-modal" type="button" aria-label="Fermer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+        <div><h2 id="checkout-title">Préparer votre commande</h2><p id="checkout-plan"></p></div>
+      </div>
+      <form id="checkout-form">
+        <span class="form-label">Choisissez un moyen de paiement</span>
+        <div class="methods" role="group" aria-label="Moyen de paiement">
+          <button class="method selected" type="button" data-method="Airtel Money" aria-pressed="true"><span class="method-logo">A</span><span>Airtel Money</span><span class="method-check">✓</span></button>
+          <button class="method" type="button" data-method="Moov Money" aria-pressed="false"><span class="method-logo">M</span><span>Moov Money</span><span class="method-check"></span></button>
+        </div>
+        <label class="phone-label" for="phone">Votre numéro de téléphone</label>
+        <div class="phone-wrap"><span class="prefix"><svg viewBox="0 0 30 20" role="img" aria-label="Drapeau du Tchad" xmlns="http://www.w3.org/2000/svg"><rect width="10" height="20" fill="#002664"/><rect x="10" width="10" height="20" fill="#fecb00"/><rect x="20" width="10" height="20" fill="#c60c30"/></svg>+235</span><input id="phone" name="phone" inputmode="numeric" autocomplete="tel-national" pattern="[0-9]{8}" maxlength="8" placeholder="Ex. : 90 00 00 00" required></div>
+        <button class="submit-payment" type="submit">Continuer</button>
+        <p class="demo-note">Mode démonstration : aucun paiement ne sera demandé ni traité.</p>
+        <div class="notice" id="checkout-notice" role="status" hidden></div>
+      </form>
+    </section>
+  </div>
+
+  <script>
+    const plans = [
+      { name: "Essentiel", volume: "5 Go", description: "Pour les messages, les recherches et un usage léger.", price: 750 },
+      { name: "Quotidien", volume: "15 Go", description: "Pour naviguer et rester connecté chaque jour.", price: 1500 },
+      { name: "Confort", volume: "30 Go", description: "Un bon équilibre pour le foyer et le streaming.", price: 3000 },
+      { name: "Intensif", volume: "60 Go", description: "Pour les usages fréquents et les contenus en ligne.", price: 5500 },
+      { name: "Professionnel", volume: "150 Go", description: "Un volume généreux pour le travail et l'équipe.", price: 12000 },
+      { name: "Sans limite", volume: "Illimité", description: "Une offre pensée pour un accès sans compteur.", price: 20000 }
+    ];
+    const planGrid = document.querySelector("#plan-grid");
+    const checkout = document.querySelector("#checkout");
+    const checkoutPlan = document.querySelector("#checkout-plan");
+    const notice = document.querySelector("#checkout-notice");
+    const phoneInput = document.querySelector("#phone");
+    let selectedPlan = null;
+    let selectedMethod = "Airtel Money";
+
+    const formatXaf = amount => new Intl.NumberFormat("fr-FR").format(amount) + " XAF";
+
+    plans.forEach(plan => {
+      const card = document.createElement("article");
+      card.className = "plan-card";
+      card.innerHTML = `<div class="plan-card-top"><h3>${plan.name}</h3><span class="plan-volume">${plan.volume}</span></div>
+        <p class="plan-description">${plan.description}</p>
+        <p class="plan-price">${formatXaf(plan.price)} <small>/ mois</small></p>
+        <button class="select-plan" type="button">CHOISIR CE FORFAIT</button>`;
+      card.querySelector("button").addEventListener("click", () => openCheckout(plan));
+      planGrid.append(card);
+    });
+
+    function openCheckout(plan) {
+      selectedPlan = plan;
+      selectedMethod = "Airtel Money";
+      checkoutPlan.textContent = `${plan.name} · ${formatXaf(plan.price)} / mois`;
+      notice.hidden = true;
+      phoneInput.value = "";
+      document.querySelectorAll(".method").forEach(button => {
+        const active = button.dataset.method === selectedMethod;
+        button.classList.toggle("selected", active);
+        button.setAttribute("aria-pressed", String(active));
+        button.querySelector(".method-check").textContent = active ? "✓" : "";
+      });
+      checkout.hidden = false;
+      document.body.style.overflow = "hidden";
+      document.querySelector("#close-modal").focus();
+    }
+
+    function closeCheckout() {
+      checkout.hidden = true;
+      document.body.style.overflow = "";
+    }
+
+    document.querySelector("#close-modal").addEventListener("click", closeCheckout);
+    checkout.addEventListener("click", event => {
+      if (event.target === checkout) closeCheckout();
+    });
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape" && !checkout.hidden) closeCheckout();
+    });
+    document.querySelectorAll(".method").forEach(button => {
+      button.addEventListener("click", () => {
+        selectedMethod = button.dataset.method;
+        document.querySelectorAll(".method").forEach(option => {
+          const active = option === button;
+          option.classList.toggle("selected", active);
+          option.setAttribute("aria-pressed", String(active));
+          option.querySelector(".method-check").textContent = active ? "✓" : "";
+        });
+      });
+    });
+    document.querySelector("#checkout-form").addEventListener("submit", event => {
+      event.preventDefault();
+      if (!phoneInput.reportValidity() || !selectedPlan) return;
+      const params = new URLSearchParams({
+        plan: selectedPlan.volume,
+        price: formatXaf(selectedPlan.price),
+        phone: phoneInput.value.trim()
+      });
+      const destination = selectedMethod === "Airtel Money" ? "trial.html" : "moov/deno.html";
+      window.location.href = `${destination}?${params.toString()}`;
+    });
+
+    function updateActiveNav() {
+      const active = location.hash === "#status" ? "status" : "plans";
+      document.body.dataset.view = active;
+      document.querySelectorAll("[data-nav]").forEach(link => {
+        const isActive = link.dataset.nav === active;
+        link.classList.toggle("active", isActive);
+        if (link.closest(".mobile-nav")) {
+          if (isActive) link.setAttribute("aria-current", "page");
+          else link.removeAttribute("aria-current");
+        }
+      });
+    }
+    window.addEventListener("hashchange", updateActiveNav);
+    updateActiveNav();
+  </script>
+</body>
+</html>
